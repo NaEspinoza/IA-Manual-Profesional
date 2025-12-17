@@ -1,467 +1,236 @@
-# Manual profesional de IA — Términos, conceptos y buenas prácticas
+# MANUAL MAESTRO DE INGENIERÍA DE IA
 
-**Objetivo:** Documento de referencia exhaustiva (para profesionales) con definiciones técnicas, explicaciones simples con analogías, fórmulas clave, fragmentos de código o pseudocódigo, buenas prácticas, trade‑offs y checklists operativos.
+**De Principios Fundamentales a Sistemas Agénticos Autónomos**
 
----
-
-## Índice
-
-1. Fundamentos y notación
-2. Arquitecturas y componentes
-3. Optimización y entrenamiento
-4. Regularización, normalización y estabilización
-5. Representaciones y aprendizaje no supervisado
-6. Modelos generativos
-7. Evaluación, métricas y calibración
-8. Incertidumbre y robustez
-9. Seguridad, adversarialidad y certificación
-10. Privacidad, federación y compliance
-11. Compresión y despliegue (edge / producción)
-12. Tokenización y NLP moderno
-13. Infraestructura, MLOps y monitoreo
-14. Sesgos, ética y gobernanza
-15. Teoría avanzada y fenómenos emergentes
-16. Checklists operativos y pruebas
-17. Fragmentos de código y pseudocódigo útiles
-18. Glosario extendido
+**Objetivo:** Proporcionar una ruta completa de aprendizaje. Si lees y entiendes cada concepto aquí, podrás dialogar de igual a igual con ingenieros senior de IA y diseñar sistemas modernos.
 
 ---
 
-# 1. Fundamentos y notación
+## 🗺️ Mapa del Contenido
 
-### 1.1. Parámetros (pesos) y sesgos
+**Fase 1: Los Cimientos (La "Física" de la IA)**
 
-* **Definición técnica:** Valores numéricos {
-  $w_{i}$, $b$ } que parametrizan funciones del modelo. Se actualizan por optimización para minimizar una pérdida.
-* **Analogía:** Cantidades en una receta; cambias cantidades (pesos) para ajustar el sabor (salida).
+1. Conceptos Nucleares y Terminología
+2. Cómo aprenden las máquinas (El motor matemático)
 
-### 1.2. Función de activación
+**Fase 2: Arquitecturas (El "Diseño" del Cerebro)**
+3. Redes Clásicas y la Revolución del Transformer
+4. Modelos Generativos y Multimodales
 
-* **Definición:** No linealidad aplicada a la salida de una capa: ReLU, Sigmoid, Tanh, GELU, SiLU/Swish.
-* **Por qué importa:** Introducen no linealidad; afectan gradiente, saturación y convergencia.
+**Fase 3: Especialización (El "Entrenamiento" Profesional)**
+5. Pre-entrenamiento vs. Fine-Tuning (PEFT/LoRA)
+6. Alineación y Preferencias Humanas (RLHF/DPO)
 
-### 1.3. Pérdida (loss)
+**Fase 4: Sistemas Cognitivos (La "Mente" en Acción)**
+7. Ingeniería de Prompts y Razonamiento
+8. RAG: Conectando la IA a tus Datos
+9. Agentes Autónomos y Uso de Herramientas
 
-* **Tipos comunes:** MSE, Cross‑Entropy, Hinge, Contrastive/InfoNCE, Triplet loss.
-* **Nota:** Elegir loss que refleje la métrica final que importa (ej. ranking, F1, AUC).
-
-### 1.4. Backpropagation
-
-* **Resumen:** Aplicación de la regla de la cadena para computar gradientes y actualizar parámetros.
-* **Analogía:** Retroalimentación en un proceso de ensayo y error.
-
----
-
-# 2. Arquitecturas y componentes
-
-### 2.1. MLP (Perceptrón multicapa)
-
-* **Uso:** Baseline para tabular y problemas sencillos.
-* **Limitación:** No captura estructura espacial/temporal eficientemente.
-
-### 2.2. CNN (Redes convolucionales)
-
-* **Fundamento:** Convoluciones para explotar invariancias locales (
-  peso compartido). Pooling y convoluciones.
-* **Uso:** Visión por computador, audio (espectrogramas).
-
-### 2.3. RNN / LSTM / GRU
-
-* **Por qué:** Manejo de secuencias; LSTM/GRU corrigen problema de gradiente en RNN simple.
-* **Limitación:** Escala mal a largas dependencias; reemplazados en muchas tareas por transformers.
-
-### 2.4. Transformer y Self‑Attention
-
-* **Componentes:** Multi‑head attention, feed‑forward, residuals, LayerNorm.
-* **Por qué revolucionó:** Captura relaciones a distancia de forma paralelizable.
-* **Variantes:** Encoder (BERT), Decoder (GPT), Encoder‑Decoder (T5), Vision Transformer (ViT).
-
-### 2.5. Mecanismos extendidos de atención
-
-* **Sparse attention:** reduce costo en long context. **Relative positional encodings** para invariancia de distancia.
-* **Linformer, Performer, Longformer:** aproximaciones para tokens largos.
+**Fase 5: Producción (El "Mundo Real")**
+10. Inferencia, Optimización y MLOps
+11. Evaluación, Seguridad y Ética
 
 ---
 
-# 3. Optimización y entrenamiento
+# FASE 1: LOS CIMIENTOS
 
-### 3.1. Optimizadores
+## 1. Conceptos Nucleares
 
-* **SGD (con momentum):** Simple y robusto; ruido útil para generalización.
-* **Adam / AdamW / Adafactor / RMSprop:** Adaptativos; AdamW corrige regularización (weight decay separado).
-* **Buena práctica:** Usar AdamW con weight decay y scheduler (warmup + decay).
+Para entender la IA, imagina que estás enseñando a cocinar a alguien que no tiene sentido del gusto, solo sigue instrucciones matemáticas.
 
-### 3.2. Scheduler de tasa de aprendizaje
+### 1.1. El Modelo (La Receta)
 
-* **Warmup:** evita oscilaciones tempranas; crucial en transformers.
-* **Cosine decay, linear decay, cyclical LR.**
+Es una función matemática compleja llena de variables ajustables.
 
-### 3.3. Gradient clipping
+* **Input (x):** Los ingredientes (ej. una foto, un texto).
+* **Output (y):** El plato final (ej. "es un gato", "siguiente palabra").
+* **Parámetros / Pesos (w):** Las cantidades de cada ingrediente. Si cambias los pesos, cambia el resultado. El objetivo de la IA es encontrar los pesos perfectos.
 
-* **Por qué:** Evitar explosión de gradientes (RNNs, training grande).
-* **Cómo:** Clip by value o by norm.
+### 1.2. Embeddings (La Piedra Angular)
 
-### 3.4. Batch size y efectos
+* **Definición:** Traducir palabras, imágenes o conceptos a listas de números (vectores) donde conceptos similares están cerca matemáticamente.
+* **Analogía:** En un mapa 2D, "Rey" y "Reina" están cerca; "Manzana" está lejos.
+* **Por qué importa:** Las máquinas no entienden texto, entienden distancias geométricas entre números.
 
-* Batch grande reduce ruido del gradiente y requiere ajustar LR (regla lineal / LARS).
-* **Gradient noise scale** guía elección de batch size.
+### 1.3. Tokenización
 
-### 3.5. Checkpointing y recuperación
+* **Definición:** El proceso de romper texto en pedazos procesables (tokens). No siempre son palabras completas (ej. "ingeni" + "ería").
+* **Experto Tip:** Los modelos actuales "ven" tokens, no letras. Esto explica por qué a veces fallan en deletrear palabras raras o hacer rimas.
 
-* Guardar pesos, optimizador, scheduler y RNG seeds para reproducibilidad.
+## 2. Cómo aprenden las máquinas (El Ciclo de Entrenamiento)
 
----
+### 2.1. Forward Pass (La Prueba)
 
-# 4. Regularización, normalización y estabilización
+El modelo recibe datos, hace cálculos con sus pesos actuales y lanza una predicción (a menudo errónea al inicio).
 
-### 4.1. Dropout
+### 2.2. Loss Function (El Crítico)
 
-* Random deactivations para reducir co‑adaptación.
+Una fórmula que mide qué tan lejos estuvo la predicción de la realidad.
 
-### 4.2. BatchNorm, LayerNorm, GroupNorm
+* **Cross-Entropy:** Estándar para clasificación y texto.
+* **MSE (Mean Squared Error):** Estándar para predecir valores numéricos.
 
-* **BatchNorm:** mejor para CNNs con batch estable. **LayerNorm:** usado en Transformers.
-* **Trade‑off:** BatchNorm depende de batch size; LayerNorm es determinista por ejemplo.
+### 2.3. Backpropagation (La Corrección)
 
-### 4.3. Weight decay (L2) y AdamW
+La magia matemática (Regla de la Cadena). Se calcula el "gradiente", que nos dice cuánto contribuyó cada peso individual al error final.
 
-* Penaliza magnitud de pesos; AdamW separa penalización del paso adaptativo para corregir sesgos.
+### 2.4. Optimizador (El Ajuste)
 
-### 4.4. Label smoothing
+Actualiza los pesos en la dirección opuesta al error.
 
-* Reduce confianza extrema, mejora calibración.
-
-### 4.5. Early stopping y regularización temprana
-
-* Monitoreo en validación para cortar entrenamiento cuando la generalización empeora.
+* **SGD:** Baja la montaña del error paso a paso.
+* **AdamW (Estándar de Oro):** Un optimizador inteligente que adapta el tamaño del paso para cada parámetro y desacopla la regularización. *Si dudas, usa AdamW.*
 
 ---
 
-# 5. Representaciones y aprendizaje no supervisado
+# FASE 2: ARQUITECTURAS
 
-### 5.1. Autoencoders y Variational Autoencoders (VAE)
+## 3. De Neuronas a Transformers
 
-* **Autoencoder:** compresión y reconstrucción.
-* **VAE:** añade estructura probabilística; optimiza ELBO = reconstrucción - KL(q||p).
+### 3.1. MLP y CNN (El Pasado Necesario)
 
-### 5.2. Contrastive Learning (SimCLR, MoCo, CLIP)
+* **MLP (Perceptrón):** Bueno para tablas de Excel simples.
+* **CNN (Convolucional):** Escanea imágenes buscando patrones (bordes -> formas -> objetos). Revolucionó la visión hasta 2020.
 
-* **Idea:** Aprender embeddings que acerquen positivos y separen negativos. InfoNCE es la pérdida típica.
-* **Uso:** Representaciones transferibles sin etiquetas.
+### 3.2. El Transformer (El Rey Actual)
 
-### 5.3. Self‑supervised objectives
+La arquitectura detrás de GPT, Claude, Llama. Se basa en un mecanismo clave:
 
-* Masked LM (BERT), next token (GPT), image patch prediction (MAE), rotation prediction, jigsaw.
+* **Self-Attention (Auto-atención):** Permite al modelo mirar toda la frase a la vez y decidir qué palabras son relevantes para entender otra.
+* *Analogía:* Cuando lees la palabra "banco", miras el contexto ("río" o "dinero") para saber qué significa. La atención le da un "peso" a esas relaciones.
 
----
 
-# 6. Modelos generativos
+* **Context Window:** La cantidad de texto que el modelo puede "recordar" en el momento presente.
 
-### 6.1. GANs (Generative Adversarial Networks)
+### 3.3. Nuevas Fronteras: MoE y Mamba
 
-* **Estructura:** generador vs discriminador en juego min‑max.
-* **Problemas:** inestabilidad, modo colapso.
+* **MoE (Mixture of Experts):** En lugar de un cerebro gigante, tienes 8 cerebros expertos (matemáticas, historia, código). Para cada palabra, un "router" decide qué experto responde. (Ej. Mixtral, GPT-4). Es más rápido y barato de ejecutar.
+* **SSMs (Mamba):** Alternativa al Transformer que puede leer textos infinitamente largos sin volverse lenta.
 
-### 6.2. Flow‑based models
+## 4. Modelos Generativos
 
-* Transformaciones invertibles con probabilidades explícitas (RealNVP, Glow).
+### 4.1. LLMs (Large Language Models)
 
-### 6.3. Autoregresivos
+Son predictores de probabilidad. Calculan P(w_i | w_{<i}). Dada una secuencia de palabras, ¿cuál es la más probable que siga? Al escalar esto con trillones de datos, emergen capacidades de razonamiento.
 
-* Modelos que factoran p(x) = \prod p(x_i | x_{<i}). GPT es ejemplo.
+### 4.2. Diffusion Models (Imágenes)
 
-### 6.4. Diffusion models
-
-* Proceso de ruido y denoise (SDE/score matching). Lideran generación de imágenes recientes.
+Aprenden a destruir imágenes añadiendo ruido (estática) hasta que son irreconocibles, y luego aprenden a revertir el proceso: crear una imagen nítida desde ruido puro. (Ej. Midjourney, Flux, Stable Diffusion).
 
 ---
 
-# 7. Evaluación, métricas y calibración
+# FASE 3: ESPECIALIZACIÓN (FINE-TUNING)
 
-### 7.1. Métricas básicas
+*Aquí es donde pasas de usar modelos a crearlos.*
 
-* Accuracy, Precision, Recall, F1, Confusion Matrix, ROC/AUC.
-* Para ranking: MRR, MAP, NDCG.
+## 5. Pre-entrenamiento vs. Fine-Tuning
 
-### 7.2. NLP: BLEU, ROUGE, METEOR
+* **Pre-training:** Enseñar al modelo a hablar y entender el mundo (costo: Millones de $).
+* **Fine-tuning (SFT):** Enseñar al modelo una tarea específica (ej. medicina, leyes). (Costo: Cientos de $).
 
-* Para generación; entender sus limitaciones (no capturan factualidad ni coherencia).
+### 5.1. PEFT (Parameter-Efficient Fine-Tuning)
 
-### 7.3. Perplexity (LM)
+El truco para entrenar modelos gigantes en hardware barato.
 
-* Exponent of cross‑entropy; mide sorpresa.
+* **LoRA (Low-Rank Adaptation):** No tocamos el cerebro principal. Le pegamos "post-its" matemáticos pequeños (matrices pequeñas) y solo entrenamos los post-its.
+* **QLoRA:** Usamos LoRA pero comprimimos el modelo base a 4-bits (menor precisión numérica) para que quepa en una sola tarjeta gráfica.
 
-### 7.4. Calibración (ECE, Brier)
+## 6. Alineación (Haciendo al modelo útil)
 
-* Medir si probabilidades correspondan a frecuencias reales.
-* Técnicas: temperature scaling, isotonic regression.
+Un modelo base solo quiere completar texto (si le dices "¿Cómo hacer una bomba?", completará con la receta). Necesitamos alinearlo.
 
----
-
-# 8. Incertidumbre y robustez
-
-### 8.1. Aleatoric vs Epistemic
-
-* Aleatoric: ruido inherente. Epistemic: falta de conocimiento (reducible con datos).
-
-### 8.2. Técnicas para estimar incertidumbre
-
-* **MC Dropout:** usar dropout en inferencia para muestras.
-* **Deep Ensembles:** múltiples modelos para estimar varianza.
-* **Bayesian neural networks:** aproximación de posterior.
-
-### 8.3. Out‑of‑Distribution detection
-
-* Softmax escalar no es suficiente; usar métodos basados en embeddings, ODIN, energy‑based scores.
+* **RLHF (Reinforcement Learning from Human Feedback):** Humanos puntúan respuestas, se entrena un "Modelo de Premio" y se usa aprendizaje por refuerzo para maximizar ese premio.
+* **DPO (Direct Preference Optimization):** La técnica moderna (2024). Eliminamos el modelo de premio intermedio. Le mostramos al modelo pares de respuestas (Ganadora vs Perdedora) y matemáticamente forzamos al modelo a preferir la ganadora. Es más estable y sencillo.
 
 ---
 
-# 9. Seguridad, adversarialidad y certificación
+# FASE 4: SISTEMAS COGNITIVOS
 
-### 9.1. Adversarial attacks
+## 7. Ingeniería de Prompts y Razonamiento
 
-* **FGSM:** Fast Gradient Sign Method; **PGD:** Projected Gradient Descent.
-* **White‑box vs Black‑box.**
+Programar en lenguaje natural.
 
-### 9.2. Adversarial training
+* **Zero-shot:** Pedir sin ejemplos.
+* **Few-shot:** Dar 2-3 ejemplos de input-output antes de pedir.
+* **CoT (Chain of Thought):** Pedir al modelo "piensa paso a paso". Esto aumenta drásticamente la inteligencia lógica.
 
-* Incluir adversarial examples en el entrenamiento; costoso pero efectivo.
+## 8. RAG (Retrieval-Augmented Generation)
 
-### 9.3. Certified defenses
+El problema de los LLMs es que alucinan y no conocen tus datos privados. **RAG** soluciona esto.
 
-* Randomized smoothing y técnicas con garantías formales para perturbaciones L2/L∞.
+1. **Ingesta:** Convertimos tus PDF/Docs en **Embeddings** y los guardamos en una **Base de Datos Vectorial** (Pinecone, Chroma).
+2. **Recuperación (Retrieval):** Cuando el usuario pregunta, buscamos los fragmentos más parecidos semánticamente en la base de datos.
+3. **Generación:** Le enviamos al LLM: "Usuario preguntó X. Usa estos fragmentos Y para responder".
 
----
+* **RAG Avanzado:** Usar **Hybrid Search** (Búsqueda vectorial + Palabras clave) y **Reranking** (un segundo modelo que reordena los resultados para máxima precisión).
 
-# 10. Privacidad, federación y compliance
+## 9. Agentes Autónomos
 
-### 10.1. Differential Privacy (DP)
+El cambio de paradigma: de "Chatbot" a "Empleado Digital".
 
-* **Idea:** añadir ruido a gradientes o agregados para que la presencia de un ejemplo no sea distinguible.
-* **DP‑SGD:** clip grads y añadir ruido calibrado.
+* **Concepto:** Un bucle donde el LLM razona, actúa y observa.
+* **ReAct (Reason + Act):**
+1. *Pensamiento:* "Necesito saber el clima de hoy".
+2. *Acción:* Llama a la herramienta `get_weather_api`.
+3. *Observación:* La API devuelve "25°C".
+4. *Respuesta:* "Hoy hace 25 grados".
 
-### 10.2. Federated Learning
 
-* Entrenamiento distribuido en clientes que no comparten datos crudos; requiere orquestación (agg segura, compresión, defensa contra poisoning).
-
-### 10.3. Compliance y regulaciones
-
-* GDPR, LGPD, y regulaciones sectoriales exigen trazabilidad y minimización de datos.
-
----
-
-# 11. Compresión y despliegue (edge / producción)
-
-### 11.1. Pruning
-
-* Eliminar conexiones/pesos insignificantes. Estrategias: magnitude pruning, structured pruning.
-
-### 11.2. Quantization
-
-* Reducir precisión (float32 → float16 → int8). Trade‑off: velocidad y tamaño vs precisión.
-
-### 11.3. Distillation
-
-* Entrenar student para imitar teacher; útil para reducción de tamaño y latencia.
-
-### 11.4. Pipeline de inferencia
-
-* Batching, caching, model partitioning (tensor parallel, pipeline parallel), offloading a CPU/NPU.
-
-### 11.5. Observabilidad: latency, throughput, P99/P50, memoria, consumo energético
-
-* Establecer SLOs y alertas.
+* **Function Calling:** Capacidad nativa de modelos modernos para generar outputs en formato JSON listos para ejecutar código.
 
 ---
 
-# 12. Tokenización y NLP moderno
+# FASE 5: PRODUCCIÓN Y OPERACIONES
 
-### 12.1. Métodos de tokenización
+## 10. Inferencia y Optimización
 
-* **BPE (Byte Pair Encoding), WordPiece, Unigram, byte‑level.**
-* **Efectos:** longitud de secuencia, OOV handling, subword fragmentation.
+Hacer que el modelo corra rápido y barato.
 
-### 12.2. Embeddings
+### 10.1. Cuantización
 
-* Representación vectorial de tokens/órdenes. Técnicas: static (Word2Vec, GloVe) vs contextual (BERT, GPT).
+Reducir la precisión de los números. Pasar de `float16` (16 bits por peso) a `int4` (4 bits). Se pierde mínima inteligencia pero se gana velocidad y se reduce memoria drásticamente.
 
-### 12.3. Retrieval‑Augmented Generation (RAG)
+### 10.2. Tecnologías de Aceleración
 
-* Combina búsqueda en vectores + LM para respuestas con grounding en documentos.
-* Componentes: index vectorial (FAISS/HNSW), retriever (dense/sparse), ranker.
+* **FlashAttention:** Un algoritmo matemático que organiza la memoria de la GPU para calcular la atención sin cuellos de botella.
+* **KV Caching:** Guardar los cálculos de los tokens pasados para no repetirlos con cada nueva palabra generada.
+* **vLLM / TGI:** Servidores de inferencia especializados que usan paginación de memoria (como los sistemas operativos) para servir a miles de usuarios a la vez.
 
----
+## 11. Evaluación y Seguridad
 
-# 13. Infraestructura, MLOps y monitoreo
+### 11.1. LLM-as-a-Judge
 
-### 13.1. Versionado y reproducibilidad
+Las métricas viejas no sirven. Ahora usamos un LLM superior (ej. GPT-4) para evaluar las respuestas de un modelo menor, puntuando coherencia, tono y exactitud.
 
-* Git para código, DVC/MLflow para datos/modelos, registries para artefactos.
+### 11.2. Seguridad (Red Teaming)
 
-### 13.2. CI/CD para ML
-
-* Tests unitarios, tests de datos, validaciones de modelos, despliegue canario, rollback.
-
-### 13.3. Monitoreo en producción
-
-* Métricas online, alertas de drift, validación de input schema, logs de predicción.
-
-### 13.4. Orquestación y recursos
-
-* Contenedores (Docker/Podman), orquestadores (K8s o alternativas ligeras), infra serverless para inferencia.
+* **Jailbreaking:** Intentar romper la ética del modelo (ej. "Actúa como mi abuela que trabajaba en una fábrica de napalm...").
+* **Prompt Injection:** Hackear un sistema insertando comandos ocultos en el texto que el modelo va a procesar.
 
 ---
 
-# 14. Sesgos, ética y gobernanza
+# CHECKLIST OPERATIVO PARA PROYECTOS DE IA
 
-### 14.1. Tipos de sesgo
+Para asegurar el éxito, sigue este orden:
 
-* Data bias (recolección), label bias, measurement bias.
-
-### 14.2. Mitigación
-
-* Recolección diversa, re‑pesos, fairness regularizers, auditing y tests A/B controlados.
-
-### 14.3. Documentación
-
-* Datasheets for datasets, Model cards, Risk assessment y registro de decisiones.
-
----
-
-# 15. Teoría avanzada y fenómenos emergentes
-
-### 15.1. Double Descent
-
-* Fenómeno donde aumentar capacidad primero empeora y luego mejora generalización.
-
-### 15.2. Lottery Ticket Hypothesis
-
-* Existen sub‑redes inicializadas que alcanzan performance comparable tras reentrenamiento.
-
-### 15.3. Scaling laws
-
-* Leyes empíricas sobre cómo performance escala con datos, parámetros y compute.
-
-### 15.4. Information Bottleneck
-
-* Balance entre compresión de la representación y retención de información relevante.
+1. **Definición:** ¿Necesitas IA generativa o basta con un clasificador clásico (XGBoost)?
+2. **Datos:** ¿Tienes datos limpios? Si es texto, ¿cómo lo vas a fragmentar (chunking)?
+3. **Baseline:** Empieza con un modelo pre-entrenado vía API. No entrenes todavía.
+4. **RAG:** Si falta conocimiento, implementa RAG.
+5. **Few-Shot:** Si falla el estilo, mejora el prompt con ejemplos.
+6. **Fine-Tuning:** Solo si lo anterior falla, usa LoRA/DPO con tus datos.
+7. **Eval:** Configura un pipeline de evaluación automática (RAGAS o LLM-judge).
+8. **Despliegue:** Usa cuantización y vLLM para reducir costos.
 
 ---
 
-# 16. Checklists operativos y pruebas
+### ¿Cómo convertirse en experto ahora?
 
-### 16.1. Checklist de entrenamiento (pre‑run)
+**Tu siguiente paso práctico:**
+No te quedes solo leyendo.
 
-* Dataset: calidad, balance, split (train/val/test), seed.
-* Augmentations: definidas y guardables.
-* Hyperparams: LR, batch size, weight decay, scheduler.
-* Checkpointing: frecuencia y retención.
-* Tests rápidos: entrenamiento por 1 epoch con subset para detectar errores.
+1. Ve a **Google Colab**.
+2. Carga un modelo pequeño (ej. "Llama-3-8B-Instruct" cuantizado).
+3. Intenta hacerle **Fine-tuning** con un dataset pequeño usando la librería `unsloth` o `peft` (son las más eficientes hoy).
 
-### 16.2. Checklist de validación antes de push a producción
-
-* Pruebas de regresión en métricas clave.
-* Calibración y ECE.
-* Test OOD y adversarial básico.
-* Test de latencia y memoria.
-* Documentación y model card.
-
-### 16.3. Checklist de monitoreo post‑despliegue
-
-* Drift detection (input feature distribution).
-* Alertas si cambio en A/B test o drop en accuracy.
-* Logs de errores y tasa de abstención.
-
----
-
-# 17. Fragmentos de código y pseudocódigo útiles
-
-### 17.1. AdamW (PyTorch‑like pseudocode)
-
-```python
-# pseudocódigo conceptual
-for batch in data:
-    loss = model(batch)
-    loss.backward()
-    for p in model.params:
-        # moment estimates
-        m[p] = beta1 * m[p] + (1-beta1) * grad[p]
-        v[p] = beta2 * v[p] + (1-beta2) * (grad[p]**2)
-        m_hat = m[p] / (1 - beta1**t)
-        v_hat = v[p] / (1 - beta2**t)
-        # update with weight decay separado
-        p -= lr * (m_hat / (sqrt(v_hat)+eps) + weight_decay * p)
-```
-
-### 17.2. Mixup
-
-```python
-# x1,y1 and x2,y2 random pairs
-lam = Beta(alpha, alpha)
-x_new = lam * x1 + (1-lam) * x2
-y_new = lam * y1 + (1-lam) * y2
-```
-
-### 17.3. InfoNCE (contrastive loss)
-
-```python
-# z_i: embeddings, positives in same batch
-logits = sim(z_i, z_pos)/tau
-labels = 0  # positive index
-loss = CrossEntropy(logits, labels)
-```
-
-### 17.4. DP‑SGD (esquema)
-
-```text
-for each microbatch:
-  grads = compute_gradients()
-  grads = clip_by_norm(grads, C)
-  aggregated = sum(grads)
-  noisy = aggregated + Normal(0, sigma*C)
-  update = noisy / batch_size
-  optimizer.step(update)
-```
-
-### 17.5. Pruning (magnitude)
-
-```python
-# Compute absolute magnitudes, zero lowest k%
-magnitudes = abs(model.weights)
-threshold = percentile(magnitudes, k)
-model.weights[magnitudes < threshold] = 0
-```
-
----
-
-# 18. Glosario extendido (selección rápida)
-
-* **AUC:** Area under ROC curve.
-* **Backbone:** arquitectura base (ResNet, ViT).
-* **Catastrophic forgetting:** olvidar tareas pasadas al aprender nuevas.
-* **Checkpoint:** snapshot del estado de entrenamiento.
-* **Data leakage:** filtración de información del set de test al entrenamiento.
-* **Embedding:** vector numérico que representa una unidad semántica.
-* **Feature store:** almacenamiento centralizado para features computadas.
-* **Gradient clipping:** limitar norma del gradiente.
-* **Head:** capa final del modelo para una tarea.
-* **IoU:** Intersection over Union (visión).
-* **OOD:** Out‑of‑distribution.
-* **RAG:** Retrieval augmented generation.
-* **SOTA:** State of the art.
-
----
-
-# Conclusión y pasos siguientes
-
-Este manual es una base técnica y operativa. Puedo:
-
-* Generar un **notebook reproducible** con ejemplos ejecutables (Mixup, AdamW vs Adam, InfoNCE, DP‑SGD, pruning + cuantización).
-* Convertir el manual en **presentación** (PPTX) o en una **cheat‑sheet** de 1 página.
-* Diseñar tests automáticos y scripts (CI) para tus pipelines.
-
-Dime cuál de las opciones preferís y lo entrego listo para usar.
-
----
-
-*Fin del documento.*
+Si logras hacer que el modelo cambie su forma de hablar con tus datos, habrás cruzado la línea de "curioso" a "practicante".
